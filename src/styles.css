@@ -701,6 +701,34 @@ legend {
   padding: 20px;
 }
 
+.activity-card-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.habit-activity-section {
+  margin-top: 24px;
+}
+
+.section-heading {
+  margin-bottom: 14px;
+}
+
+.section-heading h2 {
+  margin-bottom: 4px;
+}
+
+.section-heading p {
+  margin-bottom: 0;
+}
+
+.habit-activity-list {
+  display: grid;
+  gap: 14px;
+}
+
 .habit-detail-header {
   display: flex;
   align-items: center;
@@ -811,19 +839,19 @@ legend {
 }
 
 .heatmap-day.level-1 {
-  background: #9be9a8;
+  background: color-mix(in srgb, var(--heatmap-color, #2da44e) 28%, white);
 }
 
 .heatmap-day.level-2 {
-  background: #40c463;
+  background: color-mix(in srgb, var(--heatmap-color, #2da44e) 52%, white);
 }
 
 .heatmap-day.level-3 {
-  background: #30a14e;
+  background: color-mix(in srgb, var(--heatmap-color, #2da44e) 76%, white);
 }
 
 .heatmap-day.level-4 {
-  background: #216e39;
+  background: var(--heatmap-color, #2da44e);
 }
 
 .heatmap-day.future {

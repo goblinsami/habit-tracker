@@ -164,6 +164,7 @@ Implementado:
 - Progreso diario con porcentaje
 - Vista protegida `/activity`
 - Heatmap global de los ultimos 12 meses
+- Heatmap individual por cada habito dentro de Activity
 - Resumen de actividad historica
 - Vista protegida `/habits/:id`
 - Heatmap individual por habito

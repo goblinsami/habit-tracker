@@ -1,22 +1,41 @@
 <script setup lang="ts">
+import { computed } from 'vue'
+
+import CategoryIcon from '@/components/CategoryIcon.vue'
 import type { ActivityWeek } from '@/utils/activity'
 
-defineProps<{
+const props = defineProps<{
   weeks: ActivityWeek[]
+  headingId?: string
   title?: string
   description?: string
+  icon?: string
+  color?: string
 }>()
 
+const headingId = computed(() => props.headingId ?? 'activity-heatmap-title')
+const heatmapStyle = computed(() => ({
+  '--heatmap-color': props.color ?? '#2da44e',
+}))
 const weekdayLabels = ['D', 'L', 'M', 'X', 'J', 'V', 'S']
 const intensityLevels = [0, 1, 2, 3, 4]
 </script>
 
 <template>
-  <section class="activity-card" aria-labelledby="activity-heatmap-title">
+  <section class="activity-card" :style="heatmapStyle" :aria-labelledby="headingId">
     <div class="panel-heading">
-      <div>
-        <h2 id="activity-heatmap-title">{{ title ?? 'Ultimos 12 meses' }}</h2>
-        <p>{{ description ?? 'Intensidad basada en habitos completados por dia.' }}</p>
+      <div class="activity-card-heading">
+        <span
+          v-if="icon"
+          class="category-row-icon small"
+          :style="{ backgroundColor: `${color ?? '#2da44e'}1a` }"
+        >
+          <CategoryIcon :icon="icon" :color="color ?? '#2da44e'" :size="18" />
+        </span>
+        <div>
+          <h2 :id="headingId">{{ title ?? 'Ultimos 12 meses' }}</h2>
+          <p>{{ description ?? 'Intensidad basada en habitos completados por dia.' }}</p>
+        </div>
       </div>
     </div>
 
