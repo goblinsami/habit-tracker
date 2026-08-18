@@ -42,3 +42,11 @@ export function formatShortDate(dateKey: string) {
     year: 'numeric',
   }).format(getDateFromLocalKey(dateKey))
 }
+
+export function formatWeekdayNarrow(dateKey: string) {
+  return new Intl.DateTimeFormat('es', {
+    weekday: 'narrow',
+  })
+    .format(getDateFromLocalKey(dateKey))
+    .toUpperCase()
+}

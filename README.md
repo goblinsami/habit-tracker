@@ -100,6 +100,7 @@ src/
     HabitGroup.vue
     HabitForm.vue
     HabitRow.vue
+    HabitWeekActivity.vue
     IconPicker.vue
   composables/
     useCategories.ts
@@ -164,7 +165,7 @@ Implementado:
 - Progreso diario con porcentaje
 - Vista protegida `/activity`
 - Heatmap global de los ultimos 12 meses
-- Heatmap individual por cada habito dentro de Activity
+- Vista semanal compacta por cada habito dentro de Activity
 - Resumen de actividad historica
 - Vista protegida `/habits/:id`
 - Heatmap individual por habito

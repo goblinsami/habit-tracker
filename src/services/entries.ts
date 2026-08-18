@@ -38,6 +38,16 @@ export async function listEntriesForDateRange(startDate: string, endDate: string
   return data
 }
 
+export async function listAllEntries() {
+  const { data, error } = await supabase.from('habit_entries').select('*').order('date')
+
+  if (error) {
+    throw error
+  }
+
+  return data
+}
+
 export async function listEntriesForHabit(habitId: string, startDate: string, endDate: string) {
   const { data, error } = await supabase
     .from('habit_entries')

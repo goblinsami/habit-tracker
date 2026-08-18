@@ -3,19 +3,20 @@ import { Activity, CalendarRange } from 'lucide-vue-next'
 import { computed, onMounted, ref } from 'vue'
 
 import ActivityHeatmap from '@/components/ActivityHeatmap.vue'
-import { listEntriesForDateRange } from '@/services/entries'
+import HabitWeekActivity from '@/components/HabitWeekActivity.vue'
+import { listAllEntries, listEntriesForDateRange } from '@/services/entries'
 import { listHabits, type HabitWithCategory } from '@/services/habits'
 import type { HabitEntry } from '@/types/database'
-import { buildActivityWeeks, buildHabitActivityWeeks, type ActivityWeek } from '@/utils/activity'
+import { buildActivityWeeks } from '@/utils/activity'
 import { addDays, formatShortDate, getLocalDateKey, startOfWeek } from '@/utils/date'
 
 type HabitActivityBoard = {
   habit: HabitWithCategory
-  weeks: ActivityWeek[]
-  completedCount: number
+  entries: HabitEntry[]
 }
 
 const entries = ref<HabitEntry[]>([])
+const allEntries = ref<HabitEntry[]>([])
 const habits = ref<HabitWithCategory[]>([])
 const isLoading = ref(true)
 const errorMessage = ref<string | null>(null)
@@ -31,12 +32,11 @@ const activeDays = computed(() => new Set(completedEntries.value.map((entry) => 
 const totalCompletions = computed(() => completedEntries.value.length)
 const habitBoards = computed<HabitActivityBoard[]>(() =>
   habits.value.map((habit) => {
-    const habitEntries = entries.value.filter((entry) => entry.habit_id === habit.id)
+    const habitEntries = allEntries.value.filter((entry) => entry.habit_id === habit.id)
 
     return {
       habit,
-      weeks: buildHabitActivityWeeks(habitEntries, endDate),
-      completedCount: habitEntries.filter((entry) => entry.completed).length,
+      entries: habitEntries,
     }
   }),
 )
@@ -59,12 +59,14 @@ async function loadActivity() {
   errorMessage.value = null
 
   try {
-    const [loadedEntries, loadedHabits] = await Promise.all([
+    const [loadedEntries, loadedAllEntries, loadedHabits] = await Promise.all([
       listEntriesForDateRange(startDateKey, endDateKey),
+      listAllEntries(),
       listHabits(),
     ])
 
     entries.value = loadedEntries
+    allEntries.value = loadedAllEntries
     habits.value = loadedHabits
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : 'No se pudo cargar la actividad.'
@@ -136,15 +138,11 @@ async function loadActivity() {
         </div>
 
         <div v-else class="habit-activity-list">
-          <ActivityHeatmap
+          <HabitWeekActivity
             v-for="board in habitBoards"
             :key="board.habit.id"
-            :heading-id="`habit-activity-${board.habit.id}`"
-            :weeks="board.weeks"
-            :title="board.habit.name"
-            :description="`${board.habit.category?.name ?? 'Sin categoria'} - ${board.completedCount} completados`"
-            :icon="board.habit.category?.icon ?? 'Circle'"
-            :color="board.habit.category?.color ?? '#2da44e'"
+            :habit="board.habit"
+            :entries="board.entries"
           />
         </div>
       </section>

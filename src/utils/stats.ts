@@ -1,5 +1,5 @@
 import type { HabitEntry } from '@/types/database'
-import { addDays, getLocalDateKey } from '@/utils/date'
+import { addDays, formatWeekdayNarrow, getLocalDateKey } from '@/utils/date'
 
 export type HabitStats = {
   totalCompletedDays: number
@@ -8,20 +8,68 @@ export type HabitStats = {
   bestStreak: number
 }
 
+export type HabitWeekDay = {
+  date: string
+  label: string
+  completed: boolean
+  isToday: boolean
+}
+
 export function calculateHabitStats(entries: HabitEntry[], endDate = new Date()): HabitStats {
-  const completedDates = new Set(
-    entries.filter((entry) => entry.completed).map((entry) => entry.date),
-  )
+  const completedDates = getCompletedDateSet(entries)
 
   return {
     totalCompletedDays: completedDates.size,
-    last30DaysPercentage: calculateLast30DaysPercentage(completedDates, endDate),
-    currentStreak: calculateCurrentStreak(completedDates, endDate),
+    last30DaysPercentage: calculateLast30DaysPercentageFromDates(completedDates, endDate),
+    currentStreak: calculateCurrentStreakFromDates(completedDates, endDate),
     bestStreak: calculateBestStreak(completedDates),
   }
 }
 
-function calculateLast30DaysPercentage(completedDates: Set<string>, endDate: Date) {
+export function buildLastSevenHabitDays(entries: HabitEntry[], endDate = new Date()): HabitWeekDay[] {
+  const completedDates = getCompletedDateSet(entries)
+  const todayKey = getLocalDateKey(endDate)
+
+  return Array.from({ length: 7 }, (_, index) => {
+    const date = addDays(endDate, index - 6)
+    const dateKey = getLocalDateKey(date)
+
+    return {
+      date: dateKey,
+      label: formatWeekdayNarrow(dateKey),
+      completed: completedDates.has(dateKey),
+      isToday: dateKey === todayKey,
+    }
+  })
+}
+
+export function calculateCurrentMonthPercentage(entries: HabitEntry[], endDate = new Date()) {
+  const completedDates = getCompletedDateSet(entries)
+  const year = endDate.getFullYear()
+  const month = endDate.getMonth()
+  const elapsedDays = endDate.getDate()
+  let completedDays = 0
+
+  for (let day = 1; day <= elapsedDays; day += 1) {
+    const dateKey = getLocalDateKey(new Date(year, month, day))
+
+    if (completedDates.has(dateKey)) {
+      completedDays += 1
+    }
+  }
+
+  return Math.round((completedDays / elapsedDays) * 100)
+}
+
+export function calculateCurrentStreak(entries: HabitEntry[], endDate = new Date()) {
+  return calculateCurrentStreakFromDates(getCompletedDateSet(entries), endDate)
+}
+
+function getCompletedDateSet(entries: HabitEntry[]) {
+  return new Set(entries.filter((entry) => entry.completed).map((entry) => entry.date))
+}
+
+function calculateLast30DaysPercentageFromDates(completedDates: Set<string>, endDate: Date) {
   let completedDays = 0
 
   for (let index = 0; index < 30; index += 1) {
@@ -35,7 +83,7 @@ function calculateLast30DaysPercentage(completedDates: Set<string>, endDate: Dat
   return Math.round((completedDays / 30) * 100)
 }
 
-function calculateCurrentStreak(completedDates: Set<string>, endDate: Date) {
+function calculateCurrentStreakFromDates(completedDates: Set<string>, endDate: Date) {
   let streak = 0
 
   for (let currentDate = new Date(endDate); ; currentDate = addDays(currentDate, -1)) {

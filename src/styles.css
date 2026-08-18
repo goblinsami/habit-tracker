@@ -708,6 +708,15 @@ legend {
   min-width: 0;
 }
 
+.activity-card-heading > div {
+  min-width: 0;
+}
+
+.activity-card-heading h2,
+.activity-card-heading p {
+  overflow-wrap: anywhere;
+}
+
 .habit-activity-section {
   margin-top: 24px;
 }
@@ -726,7 +735,112 @@ legend {
 
 .habit-activity-list {
   display: grid;
-  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.habit-week-card {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.habit-week-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.habit-week-title {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.habit-week-copy {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.habit-week-copy strong,
+.habit-week-copy span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.habit-week-copy strong {
+  color: #24292f;
+  font-size: 0.98rem;
+}
+
+.habit-week-copy span {
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.habit-week-metrics {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #24292f;
+  font-size: 0.88rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.habit-week-metrics span {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.habit-week-metrics svg {
+  color: var(--habit-color, var(--accent));
+}
+
+.habit-week-strip {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 5px 6px;
+  min-width: 0;
+}
+
+.habit-week-label {
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 800;
+  line-height: 1;
+  text-align: center;
+}
+
+.habit-week-dot {
+  justify-self: center;
+  width: 13px;
+  height: 13px;
+  border: 1px solid #d8dee4;
+  border-radius: 999px;
+  background: #f6f8fa;
+}
+
+.habit-week-dot.completed {
+  border-color: var(--habit-color, var(--accent));
+  background: var(--habit-color, var(--accent));
+}
+
+.habit-week-dot.today {
+  outline: 2px solid color-mix(in srgb, var(--habit-color, var(--accent)) 24%, transparent);
+  outline-offset: 2px;
 }
 
 .habit-detail-header {
@@ -1061,6 +1175,88 @@ legend {
 
   .activity-stats {
     grid-template-columns: 1fr;
+  }
+
+  .activity-card {
+    padding: 14px;
+  }
+
+  .activity-card .panel-heading,
+  .activity-card-heading {
+    align-items: flex-start;
+  }
+
+  .activity-card-heading {
+    gap: 9px;
+  }
+
+  .activity-card-heading h2 {
+    font-size: 1rem;
+    line-height: 1.25;
+  }
+
+  .activity-card-heading p {
+    font-size: 0.84rem;
+    line-height: 1.45;
+  }
+
+  .habit-activity-section {
+    margin-top: 18px;
+  }
+
+  .habit-activity-list {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .habit-week-card {
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .habit-week-top {
+    gap: 8px;
+  }
+
+  .habit-week-title {
+    grid-template-columns: 32px minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .habit-week-copy strong {
+    font-size: 0.94rem;
+  }
+
+  .habit-week-copy span,
+  .habit-week-metrics {
+    font-size: 0.8rem;
+  }
+
+  .habit-week-metrics {
+    gap: 6px;
+  }
+
+  .habit-week-strip {
+    gap: 4px;
+  }
+
+  .habit-week-dot {
+    width: 12px;
+    height: 12px;
+  }
+
+  .heatmap-scroll {
+    width: calc(100vw - 60px);
+    max-width: 100%;
+    margin-top: 14px;
+    padding-bottom: 12px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-gutter: stable;
+  }
+
+  .heatmap-legend {
+    justify-content: flex-start;
+    margin-top: 10px;
   }
 
   .habit-detail-header {
