@@ -49,13 +49,17 @@ npm run build
 npm run preview
 ```
 
-## Configuracion Supabase para Fase 1
+## Configuracion Supabase Auth
 
-Esta fase usa Supabase Auth con email y password. En el panel de Supabase revisa:
+La aplicacion usa Supabase Auth con email y password. En el panel de Supabase revisa:
 
 - `Authentication > Providers > Email` debe estar habilitado.
 - Si mantienes confirmacion por email activa, el registro puede requerir confirmar el correo antes de iniciar sesion.
-- Para desarrollo local, anade `http://localhost:5173` en `Authentication > URL Configuration` si usas redirecciones.
+- En `Authentication > URL Configuration`, configura `Site URL` con el dominio de produccion.
+- Anade el dominio de produccion a `Redirect URLs`, por ejemplo `https://better-person.netlify.app` y `https://better-person.netlify.app/**`.
+- Para desarrollo local, puedes mantener tambien `http://localhost:5173` en `Redirect URLs`.
+
+El registro envia `emailRedirectTo` usando el origen actual de la app, asi que en local redirige a `http://localhost:5173/today` y en produccion al dominio desde el que se abrio la aplicacion.
 
 ## Base de datos y RLS
 
