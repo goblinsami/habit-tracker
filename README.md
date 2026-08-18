@@ -49,6 +49,16 @@ npm run build
 npm run preview
 ```
 
+## Deploy en Netlify
+
+La app usa Vue Router en modo history. Para que rutas directas como `/today`, `/activity` o `/habits/:id` no devuelvan 404 al refrescar en Netlify, el archivo `public/_redirects` incluye:
+
+```text
+/* /index.html 200
+```
+
+Vite lo copia automaticamente a `dist/_redirects` durante el build.
+
 ## Configuracion Supabase Auth
 
 La aplicacion usa Supabase Auth con email y password. En el panel de Supabase revisa:
