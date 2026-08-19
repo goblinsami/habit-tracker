@@ -45,6 +45,11 @@ export type Database = {
           name: string
           created_at: string
           archived: boolean
+          frequency_type: 'daily' | 'weekdays' | 'weekly' | 'yearly'
+          frequency_days: number[]
+          frequency_weekday: number | null
+          yearly_month: number | null
+          yearly_day: number | null
         }
         Insert: {
           id?: string
@@ -53,6 +58,11 @@ export type Database = {
           name: string
           created_at?: string
           archived?: boolean
+          frequency_type?: 'daily' | 'weekdays' | 'weekly' | 'yearly'
+          frequency_days?: number[]
+          frequency_weekday?: number | null
+          yearly_month?: number | null
+          yearly_day?: number | null
         }
         Update: {
           id?: string
@@ -61,6 +71,11 @@ export type Database = {
           name?: string
           created_at?: string
           archived?: boolean
+          frequency_type?: 'daily' | 'weekdays' | 'weekly' | 'yearly'
+          frequency_days?: number[]
+          frequency_weekday?: number | null
+          yearly_month?: number | null
+          yearly_day?: number | null
         }
         Relationships: [
           {

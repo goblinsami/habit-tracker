@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { CalendarDays, ListPlus } from 'lucide-vue-next'
-import { computed, onMounted, ref } from 'vue'
+import { CalendarDays, ChevronLeft, ChevronRight, ListPlus } from 'lucide-vue-next'
+import { computed, onMounted, ref, watch } from 'vue'
 import { RouterLink } from 'vue-router'
 
 import DailyProgress from '@/components/DailyProgress.vue'
@@ -9,7 +9,8 @@ import { useAuth } from '@/composables/useAuth'
 import { entriesByHabitId, listEntriesForDate, upsertHabitEntry } from '@/services/entries'
 import { listHabits, sortHabits, type HabitWithCategory } from '@/services/habits'
 import type { HabitEntry } from '@/types/database'
-import { formatLongDate, getLocalDateKey } from '@/utils/date'
+import { addDays, formatLongDate, getDateFromLocalKey, getLocalDateKey } from '@/utils/date'
+import { isHabitDueOnDate } from '@/utils/frequency'
 
 type HabitGroupView = {
   key: string
@@ -20,8 +21,9 @@ type HabitGroupView = {
 }
 
 const auth = useAuth()
-const today = getLocalDateKey()
-const todayLabel = formatLongDate()
+const selectedDate = ref(getLocalDateKey())
+const selectedDateLabel = computed(() => formatLongDate(getDateFromLocalKey(selectedDate.value)))
+const isTodaySelected = computed(() => selectedDate.value === getLocalDateKey())
 
 const habits = ref<HabitWithCategory[]>([])
 const entryMap = ref(new Map<string, HabitEntry>())
@@ -29,7 +31,9 @@ const savingHabitIds = ref(new Set<string>())
 const isLoading = ref(true)
 const errorMessage = ref<string | null>(null)
 
-const activeHabits = computed(() => habits.value.filter((habit) => !habit.archived))
+const activeHabits = computed(() =>
+  habits.value.filter((habit) => !habit.archived && isHabitDueOnDate(habit, selectedDate.value)),
+)
 const completedCount = computed(
   () =>
     activeHabits.value.filter((habit) => entryMap.value.get(habit.id)?.completed ?? false).length,
@@ -61,33 +65,50 @@ const groupedHabits = computed(() => {
   }))
 })
 
-onMounted(() => {
-  void loadToday()
+watch(selectedDate, () => {
+  void loadSelectedDate()
 })
 
-async function loadToday() {
+onMounted(() => {
+  void loadSelectedDate()
+})
+
+async function loadSelectedDate() {
   isLoading.value = true
   errorMessage.value = null
 
   try {
-    const [loadedHabits, loadedEntries] = await Promise.all([listHabits(), listEntriesForDate(today)])
+    const [loadedHabits, loadedEntries] = await Promise.all([
+      listHabits(),
+      listEntriesForDate(selectedDate.value),
+    ])
     habits.value = sortHabits(loadedHabits)
     entryMap.value = entriesByHabitId(loadedEntries)
   } catch (error) {
-    errorMessage.value = error instanceof Error ? error.message : 'No se pudo cargar Today.'
+    errorMessage.value = error instanceof Error ? error.message : 'No se pudo cargar la fecha seleccionada.'
   } finally {
     isLoading.value = false
   }
+}
+
+function goToPreviousDay() {
+  const current = getDateFromLocalKey(selectedDate.value)
+  selectedDate.value = getLocalDateKey(addDays(current, -1))
+}
+
+function goToNextDay() {
+  const current = getDateFromLocalKey(selectedDate.value)
+  selectedDate.value = getLocalDateKey(addDays(current, 1))
 }
 
 function makeOptimisticEntry(habitId: string, completed: boolean, comment: string | null): HabitEntry {
   const previousEntry = entryMap.value.get(habitId)
 
   return {
-    id: previousEntry?.id ?? `optimistic-${habitId}-${today}`,
+    id: previousEntry?.id ?? `optimistic-${habitId}-${selectedDate.value}`,
     habit_id: habitId,
     user_id: auth.user.value?.id ?? '',
-    date: today,
+    date: selectedDate.value,
     completed,
     comment,
     created_at: previousEntry?.created_at ?? new Date().toISOString(),
@@ -121,13 +142,13 @@ function setEntry(habitId: string, entry: HabitEntry | null) {
 
 async function persistEntry(habitId: string, completed: boolean, comment: string | null) {
   if (!auth.user.value) {
-    throw new Error('Necesitas iniciar sesion para registrar Today.')
+    throw new Error('Necesitas iniciar sesion para registrar el dia elegido.')
   }
 
   return upsertHabitEntry({
     habitId,
     userId: auth.user.value.id,
-    date: today,
+    date: selectedDate.value,
     completed,
     comment,
   })
@@ -177,11 +198,32 @@ async function saveComment(habitId: string, comment: string) {
       <div>
         <p class="eyebrow">Today</p>
         <h1 id="today-title">Tu dia de hoy</h1>
-        <p>{{ todayLabel }}</p>
+        <p>{{ selectedDateLabel }}</p>
       </div>
 
       <DailyProgress :completed="completedCount" :total="activeHabits.length" />
     </section>
+
+    <div class="date-selector" aria-label="Selector de fecha">
+      <button class="secondary-button nav-date-button" type="button" @click="goToPreviousDay">
+        <ChevronLeft :size="16" aria-hidden="true" />
+        <span>Anterior</span>
+      </button>
+
+      <label class="date-input-label">
+        <span class="sr-only">Fecha</span>
+        <input v-model="selectedDate" type="date" />
+      </label>
+
+      <button class="secondary-button nav-date-button" type="button" :disabled="isTodaySelected" @click="selectedDate = getLocalDateKey()">
+        <span>Hoy</span>
+      </button>
+
+      <button class="secondary-button nav-date-button" type="button" @click="goToNextDay">
+        <span>Siguiente</span>
+        <ChevronRight :size="16" aria-hidden="true" />
+      </button>
+    </div>
 
     <p v-if="errorMessage" class="notice" role="alert">{{ errorMessage }}</p>
 
@@ -191,8 +233,10 @@ async function saveComment(habitId: string, comment: string) {
       <CalendarDays :size="32" aria-hidden="true" />
       <div>
         <h2 id="empty-title">No hay habitos activos</h2>
-        <p>Crea al menos un habito para empezar a registrar el dia.</p>
-        <RouterLink class="inline-link" to="/habits">
+        <p>
+          {{ isTodaySelected ? 'Crea al menos un habito para empezar a registrar el dia.' : 'No hay habitos programados para esta fecha.' }}
+        </p>
+        <RouterLink v-if="isTodaySelected" class="inline-link" to="/habits">
           <ListPlus :size="16" aria-hidden="true" />
           <span>Crear habito</span>
         </RouterLink>

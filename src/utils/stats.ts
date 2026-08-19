@@ -84,9 +84,33 @@ function calculateLast30DaysPercentageFromDates(completedDates: Set<string>, end
 }
 
 function calculateCurrentStreakFromDates(completedDates: Set<string>, endDate: Date) {
+  if (completedDates.size === 0) {
+    return 0
+  }
+
+  const sortedDates = [...completedDates].sort()
+  const latestCompletedDate = sortedDates.reduce<Date | null>((latest, currentDateKey) => {
+    const [year, month, day] = currentDateKey.split('-').map(Number)
+    const currentDate = new Date(year, month - 1, day)
+
+    if (currentDate > endDate) {
+      return latest
+    }
+
+    if (!latest || currentDate > latest) {
+      return currentDate
+    }
+
+    return latest
+  }, null)
+
+  if (!latestCompletedDate) {
+    return 0
+  }
+
   let streak = 0
 
-  for (let currentDate = new Date(endDate); ; currentDate = addDays(currentDate, -1)) {
+  for (let currentDate = new Date(latestCompletedDate); ; currentDate = addDays(currentDate, -1)) {
     const dateKey = getLocalDateKey(currentDate)
 
     if (!completedDates.has(dateKey)) {

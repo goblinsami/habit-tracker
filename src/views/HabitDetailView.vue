@@ -10,6 +10,7 @@ import { getHabit, type HabitWithCategory } from '@/services/habits'
 import type { HabitEntry } from '@/types/database'
 import { buildHabitActivityWeeks } from '@/utils/activity'
 import { formatShortDate } from '@/utils/date'
+import { formatHabitFrequency } from '@/utils/frequency'
 import { calculateHabitStats } from '@/utils/stats'
 
 const route = useRoute()
@@ -79,7 +80,7 @@ async function loadHabitDetail() {
           <p class="eyebrow">{{ habit.category?.name ?? 'Sin categoria' }}</p>
           <h1 id="habit-detail-title">{{ habit.name }}</h1>
           <p>
-            {{ habit.archived ? 'Archivado' : 'Activo' }} - creado el
+            {{ habit.archived ? 'Archivado' : 'Activo' }} • {{ formatHabitFrequency(habit) }} • creado el
             {{ formatShortDate(habit.created_at.slice(0, 10)) }}
           </p>
         </div>

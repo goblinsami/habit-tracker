@@ -325,6 +325,42 @@ textarea:focus {
   padding: 48px 0;
 }
 
+.date-selector {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 20px;
+}
+
+.date-input-label {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+}
+
+.date-input-label input {
+  min-height: 40px;
+  padding: 0 12px;
+}
+
+.nav-date-button {
+  flex: 0 0 auto;
+  min-width: 108px;
+  padding-inline: 12px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .page-header {
   display: flex;
   align-items: flex-start;
@@ -1074,10 +1110,73 @@ legend {
   font-size: 0.9rem;
 }
 
+.habit-frequency-label {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
 .habit-comment {
   padding: 10px 12px;
   border-left: 3px solid var(--border);
   background: #f6f8fa;
+}
+
+.segmented-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.segmented-option {
+  min-height: 38px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--muted);
+  background: #ffffff;
+  font-weight: 700;
+}
+
+.segmented-option.active {
+  border-color: var(--accent);
+  color: var(--accent-strong);
+  background: rgba(45, 164, 78, 0.1);
+}
+
+.picker-block {
+  display: grid;
+  gap: 10px;
+}
+
+.weekday-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.weekday-chip {
+  min-width: 52px;
+  min-height: 38px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--muted);
+  background: #ffffff;
+  font-weight: 700;
+}
+
+.weekday-chip.active {
+  border-color: var(--accent);
+  color: var(--accent-strong);
+  background: rgba(45, 164, 78, 0.1);
+}
+
+.yearly-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
 }
 
 .comment-editor {
@@ -1156,6 +1255,38 @@ legend {
   .page-header,
   .empty-state {
     flex-direction: column;
+  }
+
+  .date-selector {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .date-selector .nav-date-button {
+    flex: 0 0 auto;
+    min-width: 0;
+    width: auto;
+    padding-inline: 10px;
+    font-size: 0.76rem;
+    white-space: nowrap;
+  }
+
+  .date-input-label {
+    display: flex;
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+  }
+
+  .date-input-label input {
+    width: 100%;
+    min-width: 0;
+    min-height: 38px;
+    font-size: 0.96rem;
   }
 
   .header-action,

@@ -8,6 +8,7 @@ import HabitForm from '@/components/HabitForm.vue'
 import { useCategories } from '@/composables/useCategories'
 import { useHabits } from '@/composables/useHabits'
 import type { HabitInput, HabitWithCategory } from '@/services/habits'
+import { formatHabitFrequency } from '@/utils/frequency'
 
 const categoriesStore = useCategories()
 const habitsStore = useHabits()

@@ -5,6 +5,7 @@ import { computed, ref, watch } from 'vue'
 import CategoryIcon from '@/components/CategoryIcon.vue'
 import type { HabitWithCategory } from '@/services/habits'
 import type { HabitEntry } from '@/types/database'
+import { formatHabitFrequency } from '@/utils/frequency'
 
 const props = defineProps<{
   habit: HabitWithCategory
@@ -72,6 +73,8 @@ function saveComment() {
           <p>{{ habit.category?.name ?? 'Sin categoria' }}</p>
         </div>
       </div>
+
+      <p class="habit-frequency-label">{{ formatHabitFrequency(habit) }}</p>
 
       <div v-if="isCommentOpen" class="comment-editor">
         <textarea
